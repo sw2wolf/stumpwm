@@ -47,8 +47,7 @@
 
 ;;; CODE:
 
-#-(or sbcl clisp lispworks6)
-(error "Unimplemented for ~S." (lisp-implementation-type))
+#-(or sbcl clisp ccl) (error "unimplemented")
 
 (in-package :stumpwm)
 
@@ -105,14 +104,10 @@
 	  *mpd-browse-map*
 	  *mpd-search-map*))
 
-#+lispworks
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (require "comm"))
-
 ;;mpd client
 (defparameter *mpd-socket* nil)
 (defparameter *mpd-server*
-  #+(or clisp lispworks)
+  #+(or clisp ccl)
   "localhost"
   #+sbcl
   #(127 0 0 1)
@@ -140,13 +135,12 @@
 (defun mpd-send (command)
   "Send command to stream ending with newline"
   (with-mpd-connection
-    (let ((cmd (concatenate 'string command (string #\Newline))))
-      #+clisp
-      (ext:write-char-sequence cmd *mpd-socket*)
-      #+sbcl
-      (write-sequence cmd *mpd-socket*)
-      #+lispworks
-      (write-sequence (ef:encode-lisp-string cmd :utf-8) *mpd-socket*))
+   (#+clisp
+    ext:write-char-sequence
+    #+(or sbcl ccl)
+    write-sequence
+    (concatenate  'string command (string #\Newline))
+    *mpd-socket*)
     (force-output *mpd-socket*)))
 
 (defun mpd-send-command (cmd)
@@ -177,63 +171,42 @@
 (defun assoc-value (name list)
   (cadr (assoc name list)))
 
-(defun mpd-receive (&optional ignore-data-p)
-  "Unless IGNORE-DATA-P is T returns a list containing all data sent by mpd."
+(defun mpd-receive ()
+  "Returns a list containing all data sent by mpd."
   (with-mpd-connection
-    (flet ((receive-line (stream)
-             #+(or sbcl clisp)
-             (read-line stream)
-             #+lispworks
-             (let ((bytes
-                     (loop for b = (read-byte stream)
-                           until (char= (code-char b) #\Newline)
-                           collect b)))
-               (ef:decode-external-string (coerce bytes 'vector) :utf-8))))
-      (if ignore-data-p
-          (receive-line *mpd-socket*)
-          (loop for i = (receive-line *mpd-socket*)
-                when (mpd-error-p i)
-                  do (message "Error sent back by mpd: ~a" i)
-                until (mpd-termination-p i)
-                collect (mpd-tokenize i))))))
+   (loop for i = (read-line *mpd-socket*)
+         when (mpd-error-p i)
+         do (message "Error sent back by mpd: ~a" i)
+         until (mpd-termination-p i)
+         collect (mpd-tokenize i))))
 
 (defun init-mpd-connection ()
   "Connect to mpd server"
     (setf *mpd-socket*
-          #+clisp
-        (handler-case (socket:socket-connect *mpd-port* *mpd-server*
-                                             :element-type 'character)
-                      ((or system::simple-os-error error)
-                       (err)
-                         (format t  "Error connecting to mpd: ~a~%" err)))
-          #+sbcl
-          (handler-case (let ((s (make-instance 'sb-bsd-sockets:inet-socket
-                                                :type :stream :protocol :tcp)))
-                          (sb-bsd-sockets:socket-connect s *mpd-server*
-                                                         *mpd-port*)
-                          (sb-bsd-sockets:socket-make-stream s
-                                                             :input t
-                                                             :output t
-                                                             :buffering :none))
-                        ((or simple-error error)
-                         (err)
-                       (format t  "Error connecting to mpd: ~a~%" err)))
-          #+lispworks
-          (handler-case
-              (comm:open-tcp-stream *mpd-server* *mpd-port*
-                                    :direction :io
-                                    :element-type '(unsigned-byte 8)
-                                    :errorp t)
-            (error
-              (err)
-              (format t  "Error connecting to mpd: ~a~%" err))))
-  (when *mpd-socket*
-    (when *mpd-timeout*
-      (setf *mpd-timer*
-            (run-with-timer *mpd-timeout* *mpd-timeout* 'mpd-ping)))
-    (mpd-receive t)
-    (when *mpd-password*
-      (mpd-format-command "password \"~a\"" *mpd-password*))))
+        (handler-case
+            #+clisp
+            (socket:socket-connect *mpd-port* *mpd-server* :element-type 'character)
+            #+sbcl
+            (let ((s (make-instance 'sb-bsd-sockets:inet-socket
+                                    :type :stream :protocol :tcp)))
+                (sb-bsd-sockets:socket-connect s *mpd-server* *mpd-port*)
+                (sb-bsd-sockets:socket-make-stream s
+                    :input t :output t :buffering :none))
+            #+ccl
+            (let ((s (ccl:make-socket :connect :active :format :text
+                    :remote-host *mpd-server*
+                    :remote-port *mpd-port*)))
+                (setf (stream-external-format s) :utf-8)
+                s)
+            (error (err)
+                (format t "Error connecting to mpd: ~a~%" err))))
+    (when *mpd-socket*
+        (when *mpd-timeout*
+            (setf *mpd-timer*
+                (run-with-timer *mpd-timeout* *mpd-timeout* 'mpd-ping)))
+        (read-line *mpd-socket*)
+        (when *mpd-password*
+            (mpd-format-command "password \"~a\"" *mpd-password*))))
 
 (defun mpd-ping ()
   (mpd-send-command "ping"))
