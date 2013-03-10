@@ -553,7 +553,7 @@ functions are passed this structure as their first argument."
 
 
 ;;; Misc functions
-(defparameter *numpad-map* '((87 . 10) (88 . 11) (89 . 12) (83 . 13) (84 . 14) (85 . 15) (79 . 16) (80 . 17) (81 . 18)))
+(defparameter *numpad-map* '((87 . 10) (88 . 11) (89 . 12) (83 . 13) (84 . 14) (85 . 15) (79 . 16) (80 . 17) (81 . 18) (91 . 60)))
 
 (defun process-input (screen prompt input code state)
   "Process the key (code and state), given the current input
@@ -569,6 +569,7 @@ input (pressing Return), nil otherwise."
                        (funcall command input key)
                      (setf *input-last-command* command))
                    :error))))
+    ;(message "code=~a state=~a~%" code state) 
     (unless (not (assoc code *numpad-map*))
       (setf code (cdr (assoc code *numpad-map*))))
     (case (process-key code state)
