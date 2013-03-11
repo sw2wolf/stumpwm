@@ -553,7 +553,7 @@ functions are passed this structure as their first argument."
 
 
 ;;; Misc functions
-(defparameter *numpad-map* '((87 . 10) (88 . 11) (89 . 12) (83 . 13) (84 . 14) (85 . 15) (79 . 16) (80 . 17) (81 . 18) (91 . 60)))
+(defparameter *numpad-map* '((87 . 10) (88 . 11) (89 . 12) (83 . 13) (84 . 14) (85 . 15) (79 . 16) (80 . 17) (81 . 18) (91 . 60) (90 . 19)))
 
 (defun process-input (screen prompt input code state)
   "Process the key (code and state), given the current input
