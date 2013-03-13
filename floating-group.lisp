@@ -126,6 +126,7 @@
   (&float-focus-next group))
 
 (defmethod group-wake-up ((group float-group))
+  (clear-frame-outlines group)
   (&float-focus-next group))
 
 (defmethod group-suspend ((group float-group))
