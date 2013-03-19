@@ -127,9 +127,14 @@
   (xlib:ungrab-keyboard *display*)
   (xlib:unmap-window (screen-input-window screen)))
 
+(defparameter *numpad-map* '((87 . 10) (88 . 11) (89 . 12) (83 . 13) (84 . 14) (85 . 15) (79 . 16) (80 . 17) (81 . 18) (91 . 60) (90 . 19)))
+
 (defun input-handle-key-press-event (&rest event-slots &key event-key root code state &allow-other-keys)
   (declare (ignore event-slots root))
   ;; FIXME: don't use a cons
+  ;(message "event-key:~a code:~a state:~a~%" event-key code state)
+  (unless (not (assoc code *numpad-map*))
+      (setf code (cdr (assoc code *numpad-map*))))
   (list* event-key code state))
 
 (defun input-handle-selection-event (&key window selection property &allow-other-keys)
@@ -553,7 +558,7 @@ functions are passed this structure as their first argument."
 
 
 ;;; Misc functions
-(defparameter *numpad-map* '((87 . 10) (88 . 11) (89 . 12) (83 . 13) (84 . 14) (85 . 15) (79 . 16) (80 . 17) (81 . 18) (91 . 60) (90 . 19)))
+
 
 (defun process-input (screen prompt input code state)
   "Process the key (code and state), given the current input
@@ -569,9 +574,7 @@ input (pressing Return), nil otherwise."
                        (funcall command input key)
                      (setf *input-last-command* command))
                    :error))))
-    ;(message "code=~a state=~a~%" code state) 
-    (unless (not (assoc code *numpad-map*))
-      (setf code (cdr (assoc code *numpad-map*))))
+    
     (case (process-key code state)
       (:done
        (unless (or (input-line-password input)
