@@ -175,7 +175,7 @@ such a case, kill the shell command to resume StumpWM."
   "Evaluate the s-expression and display the result(s)."
   (with-output-to-string (*standard-output*)
   (handler-case
-      (message "^20~{~a~^~%~}"
+      (format t "^20~{~a~^~%~}"
                (mapcar 'prin1-to-string
                        (multiple-value-list (eval (read-from-string cmd)))))
     (error (c)
