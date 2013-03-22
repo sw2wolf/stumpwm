@@ -179,7 +179,7 @@ such a case, kill the shell command to resume StumpWM."
                (mapcar 'prin1-to-string
                        (multiple-value-list (eval (read-from-string cmd)))))
     (error (c)
-      (err "^B^1*~A" c)))))
+      (format t "^B^1*~A" c)))))
 
 (defcommand-alias eval eval-line)
 
