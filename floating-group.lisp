@@ -52,14 +52,18 @@
                 (xlib:drawable-height xwin) height
                 (window-height win) height))))))
 
+;; (defmethod update-decoration ((window float-window))
+;;   (let ((group (window-group window)))
+;;     (setf (xlib:window-background (window-parent window))
+;;           (if (eq (group-current-window group) window)
+;;               :none
+;;               ;(screen-float-focus-color (window-screen window))
+;;               (screen-float-unfocus-color (window-screen window))))
+;;     (xlib:clear-area (window-parent window))))
+
 (defmethod update-decoration ((window float-window))
-  (let ((group (window-group window)))
-    (setf (xlib:window-background (window-parent window))
-          (if (eq (group-current-window group) window)
-              :none
-              ;(screen-float-focus-color (window-screen window))
-              (screen-float-unfocus-color (window-screen window))))
-    (xlib:clear-area (window-parent window))))
+  (setf (xlib:window-background (window-parent window)) :none)
+  (xlib:clear-area (window-parent window)))
 
 (defmethod window-sync ((window float-window) hint)
   (declare (ignore hint))
