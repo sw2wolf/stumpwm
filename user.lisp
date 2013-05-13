@@ -297,7 +297,7 @@ instance. @var{all-groups} overrides this default. Similarily for
                     (second other-matches)
                     (first matches))))
       (if win
-          (if (eq (type-of (current-group)) 'float-group)
+          (if (eq (type-of (window-group win)) 'float-group)
               (group-focus-window (window-group win) win)
               (goto-win-tile win))
           (run-shell-command cmd)))))
