@@ -280,7 +280,7 @@ instance. @var{all-groups} overrides this default. Similarily for
   (labels
       ;; Raise the window win and select its frame.  For now, it
       ;; does not select the screen.
-      ((goto-win (win)
+      ((goto-win-tile (win)
          (let* ((group (window-group win))
                 (frame (window-frame win))
                 (old-frame (tile-group-current-frame group)))
@@ -297,7 +297,9 @@ instance. @var{all-groups} overrides this default. Similarily for
                     (second other-matches)
                     (first matches))))
       (if win
-          (goto-win win)
+          (if (eq (type-of (current-group)) 'float-group)
+              (group-focus-window (window-group win) win)
+              (goto-win-tile win))
           (run-shell-command cmd)))))
 
 (defun run-or-pull (cmd props &optional (all-groups *run-or-raise-all-groups*)
