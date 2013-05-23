@@ -157,8 +157,8 @@
   (float-window-move-resize window :x x :y y))
 
 (defmethod group-raise-request ((group float-group) window type)
-  (declare (ignore type))
-  (focus-window window))
+  (declare (ignore type)))
+  ;(focus-window window))
 
 (defmethod group-lost-focus ((group float-group))
   (&float-focus-next group))
