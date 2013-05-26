@@ -56,8 +56,8 @@
   (let ((group (window-group window)))
     (setf (xlib:window-background (window-parent window))
           (if (eq (group-current-window group) window)
-              ;:none
-              (screen-float-focus-color (window-screen window))
+              :none
+              ;(screen-float-focus-color (window-screen window))
               (screen-float-unfocus-color (window-screen window))))
     (xlib:clear-area (window-parent window))))
 
@@ -145,8 +145,7 @@
     (xlib:with-state (parent)
       (setf (xlib:drawable-width parent) (+ width (* 2 *float-window-border*))
             (xlib:drawable-height parent) (+ height *float-window-title-height* *float-window-border*)
-            (xlib:window-background parent) (xlib:alloc-color (xlib:screen-default-colormap (screen-number (window-screen window)))
-                                                              "Orange")))
+            (xlib:window-background parent) (xlib:alloc-color (xlib:screen-default-colormap (screen-number (window-screen window))) "Black"))) ;Orange
     (xlib:clear-area (window-parent window))))
 
 (defmethod group-resize-request ((group float-group) window width height)
