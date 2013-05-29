@@ -52,14 +52,16 @@
                 (xlib:drawable-height xwin) height
                 (window-height win) height))))))
 
-(defmethod update-decoration ((window float-window))
-  (let ((group (window-group window)))
-    (setf (xlib:window-background (window-parent window))
-          (if (eq (group-current-window group) window)
-              :none
-              ;(screen-float-focus-color (window-screen window))
-              (screen-float-unfocus-color (window-screen window))))
-    (xlib:clear-area (window-parent window))))
+;; (defmethod update-decoration ((window float-window))
+;;   (let ((group (window-group window)))
+;;     (setf (xlib:window-background (window-parent window))
+;;           (if (eq (group-current-window group) window)
+;;               :none
+;;               ;(screen-float-focus-color (window-screen window))
+;;               (screen-float-unfocus-color (window-screen window))))
+;;     (xlib:clear-area (window-parent window))))
+
+(defmethod update-decoration ((window float-window)))
 
 (defmethod window-sync ((window float-window) hint)
   (declare (ignore hint))
@@ -114,7 +116,7 @@
 
 (defmethod group-add-window ((group float-group) window &key &allow-other-keys)
   (change-class window 'float-window)
-  (float-window-align window)
+  ;(float-window-align window)
   (focus-window window))
 
 (defun &float-focus-next (group)
@@ -139,14 +141,14 @@
 (defmethod group-current-head ((group float-group))
   (first (screen-heads (group-screen group))))
 
-(defun float-window-align (window)
-  (with-slots (parent xwin width height) window
-    (set-window-geometry window :x *float-window-border* :y *float-window-title-height*)
-    (xlib:with-state (parent)
-      (setf (xlib:drawable-width parent) (+ width (* 2 *float-window-border*))
-            (xlib:drawable-height parent) (+ height *float-window-title-height* *float-window-border*)
-            (xlib:window-background parent) (xlib:alloc-color (xlib:screen-default-colormap (screen-number (window-screen window))) "Black"))) ;Orange
-    (xlib:clear-area (window-parent window))))
+;; (defun float-window-align (window)
+;;   (with-slots (parent xwin width height) window
+;;     (set-window-geometry window :x *float-window-border* :y *float-window-title-height*)
+;;     (xlib:with-state (parent)
+;;       (setf (xlib:drawable-width parent) (+ width (* 2 *float-window-border*))
+;;             (xlib:drawable-height parent) (+ height *float-window-title-height* *float-window-border*)
+;;             (xlib:window-background parent) (xlib:alloc-color (xlib:screen-default-colormap (screen-number (window-screen window))) "Black"))) ;Orange
+;;     (xlib:clear-area (window-parent window))))
 
 (defmethod group-resize-request ((group float-group) window width height)
   (float-window-move-resize window :width width :height height))
