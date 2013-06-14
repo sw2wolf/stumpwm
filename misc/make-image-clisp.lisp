@@ -12,9 +12,6 @@ exit
 (push #p"~/quicklisp/dists/quicklisp/software/clx-20121125-git/" asdf:*central-registry*)
 (asdf:oos 'asdf:load-op :clx)
 
-(push #p"/media/D/qachina/db/doc/money/" asdf:*central-registry*)
-(asdf:oos 'asdf:load-op :money)
-
 (push #p"~/quicklisp/local-projects/stumpwm/" asdf:*central-registry*)
 (asdf:oos 'asdf:load-op :stumpwm)
 
