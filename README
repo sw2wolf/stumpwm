@@ -1,1 +1,1 @@
-This is a clone of stumpwm. After installing QuickLisp and needed packages(clx,cl-ppcre,etc.), you can use scripts in bin/ to credate stumpwm image for CLISP and CCL.  Of course, you can customize those scripts to support other CL implementations.
+This is a clone of stumpwm. After installing QuickLisp and needed packages(clx,cl-ppcre,etc.), you can use scripts in bin/ to create stumpwm image for CLISP and CCL.  Of course, you can customize those scripts to support other CL implementations.
