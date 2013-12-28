@@ -5,6 +5,7 @@ exit
 |#
 
 (load "~/quicklisp/asdf")
+;(require :asdf)
 
 (push #p"~/quicklisp/dists/quicklisp/software/cl-ppcre-2.0.4/" asdf:*central-registry*)
 (asdf:oos 'asdf:load-op :cl-ppcre)
