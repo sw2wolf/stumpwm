@@ -1,5 +1,4 @@
-":"; exec ~/ccl/fx86cl -Q -b -n -l $0
-(setf *load-verbose* nil *load-print* nil)
+#!lisp -batch
 (load "~/quicklisp/asdf")
 
 (push #p"~/quicklisp/dists/quicklisp/software/cl-ppcre-2.0.9/" asdf:*central-registry*)
@@ -11,6 +10,9 @@
 (push #p"~/quicklisp/local-projects/stumpwm/" asdf:*central-registry*)
 (asdf:oos 'asdf:load-op :stumpwm)
 
-(ccl:save-application "stumpwm" :prepend-kernel t :toplevel-function #'stumpwm:stumpwm)
+(ext:save-lisp "stumpwm" 
+               :purify t :load-init-file nil :process-command-line nil 
+               :executable t :batch-mode nil :print-herald nil 
+               :init-function #'stumpwm:stumpwm)
 
 (quit)

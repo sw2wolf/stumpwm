@@ -6,11 +6,11 @@
 ;;     (load quicklisp-init)))
 (require :asdf)
 
-(push #p"~/quicklisp/dists/quicklisp/software/cl-ppcre-2.0.4/" asdf:*central-registry*)
+(push #p"~/quicklisp/dists/quicklisp/software/cl-ppcre-2.0.9/" asdf:*central-registry*)
 (asdf:oos 'asdf:load-op :cl-ppcre)
 ;(ql:quickload :cl-ppcre)
 
-(push #p"~/quicklisp/dists/quicklisp/software/clx-20121125-git/" asdf:*central-registry*)
+(push #p"~/quicklisp/dists/quicklisp/software/clx-20141106-git/" asdf:*central-registry*)
 (asdf:oos 'asdf:load-op :clx)
 ;(ql:quickload :clx)
 
